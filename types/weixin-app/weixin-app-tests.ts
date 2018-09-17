@@ -60,6 +60,16 @@ Component({
 				success(res) {}
 			});
 
+			getCurrentPages()[0].route;
+
+			wx.getSetting({
+				success(res) {
+					res.authSetting["scope.address"];
+				}
+			});
+
+			wx.authorize({ scope: "scope.userLocation" });
+
 			wx.reportMonitor("123", 123);
 
 			wx.getLogManager().info("123");

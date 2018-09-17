@@ -3063,12 +3063,17 @@ declare namespace wx {
 	 * 登录态过期后开发者可以再调用wx.login获取新的用户登录态。
 	 */
 	function checkSession(options: CheckSessionOption): void;
+
+	interface AuthorizeOptions extends BaseOptions {
+		scope: keyof AuthSetting;
+	}
+
 	/**
 	 * 提前向用户发起授权请求。
 	 * 调用后会立刻弹窗询问用户是否同意授权小程序使用某项功能或获取用户的某些数据，
 	 * 但不会实际调用对应接口。如果用户之前已经同意授权，则不会出现弹窗，直接返回成功。
 	 */
-	function authorize(options: AuthSetting): void;
+	function authorize(options: AuthorizeOptions): void;
 	// 开放接口-----用户信息
 	interface UserInfo {
 		nickName: string;
@@ -3290,21 +3295,16 @@ declare namespace wx {
 	function openCard(options: OpenCardOptions): void;
 	// 开放接口-----设置
 	interface AuthSetting {
-		scope:
-			| "scope.userInfo"
-			| "scope.userLocation"
-			| "scope.address"
-			| "scope.invoiceTitle"
-			| "scope.werun"
-			| "scope.record"
-			| "scope.writePhotosAlbum";
-		success?(res: ErrMsgResponse): void;
-		fail?(): void;
-		complete?(): void;
+		"scope.userInfo": boolean;
+		"scope.userLocation": boolean;
+		"scope.address": boolean;
+		"scope.invoiceTitle": boolean;
+		"scope.werun": boolean;
+		"scope.record": boolean;
+		"scope.writePhotosAlbum": boolean;
 	}
-	interface OpenSettingOptions extends BaseOptions {
-		success?(res: { authSetting: AuthSetting }): void;
-	}
+	interface OpenSettingOptions
+		extends BaseOptions<{ authSetting: AuthSetting }> {}
 	/**
 	 * 调起客户端小程序设置界面，返回用户设置的操作结果。
 	 * 注：设置界面只会出现小程序已经向用户请求过的权限。
@@ -3839,7 +3839,9 @@ declare namespace wx {
 		 * 参见 [behaviors](https://mp.weixin.qq.com/debug/wxadoc/dev/framework/custom-component/behaviors.html)
 		 */
 		behaviors?: Array<
-			(ComponentOptions<Component<object, object>>) | string
+			| ReturnType<typeof Behavior>
+			| "wx://form-field"
+			| "wx://component-export"
 		>;
 
 		/**
@@ -4048,7 +4050,7 @@ declare namespace wx {
 		/**
 		 * 字段可以获取到当前页面的路径。
 		 */
-		route(): void;
+		route: string;
 		/**
 		 * 更新
 		 */
